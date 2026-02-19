@@ -1,0 +1,317 @@
+/* Google Fonts - Must be first */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-syne);
+  --font-mono: var(--font-jetbrains-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-cyan: var(--cyan);
+  --color-purple: var(--purple);
+  --color-cyan-glow: var(--cyan-glow);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+:root {
+  /* RepoLens Design System - Dark Theme (Default) */
+  --radius: 0.75rem;
+  
+  /* Core Colors */
+  --background: #0a0a0f;
+  --foreground: #f8fafc;
+  
+  /* Card & Popover */
+  --card: rgba(15, 15, 25, 0.8);
+  --card-foreground: #f8fafc;
+  --popover: rgba(15, 15, 25, 0.95);
+  --popover-foreground: #f8fafc;
+  
+  /* Primary - Cyan Accent */
+  --primary: #00e5ff;
+  --primary-foreground: #0a0a0f;
+  
+  /* Secondary - Purple */
+  --secondary: #7c3aed;
+  --secondary-foreground: #f8fafc;
+  
+  /* Muted */
+  --muted: rgba(30, 30, 45, 0.6);
+  --muted-foreground: #94a3b8;
+  
+  /* Accent */
+  --accent: #00e5ff;
+  --accent-foreground: #0a0a0f;
+  
+  /* Destructive */
+  --destructive: #ef4444;
+  
+  /* Border & Input */
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #00e5ff;
+  
+  /* Custom Accent Colors */
+  --cyan: #00e5ff;
+  --purple: #7c3aed;
+  --cyan-glow: rgba(0, 229, 255, 0.3);
+  
+  /* Chart Colors */
+  --chart-1: #00e5ff;
+  --chart-2: #7c3aed;
+  --chart-3: #22d3ee;
+  --chart-4: #a855f7;
+  --chart-5: #38bdf8;
+  
+  /* Sidebar */
+  --sidebar: rgba(10, 10, 15, 0.95);
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #00e5ff;
+  --sidebar-primary-foreground: #0a0a0f;
+  --sidebar-accent: rgba(0, 229, 255, 0.1);
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #00e5ff;
+  
+  /* Font Variables */
+  --font-syne: 'Syne', sans-serif;
+  --font-jetbrains-mono: 'JetBrains Mono', monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-syne);
+  }
+  
+  /* Selection Color */
+  ::selection {
+    background: rgba(0, 229, 255, 0.3);
+    color: #f8fafc;
+  }
+}
+
+@layer utilities {
+  /* Font Utilities */
+  .font-heading {
+    font-family: var(--font-syne);
+  }
+  
+  .font-mono {
+    font-family: var(--font-jetbrains-mono);
+  }
+  
+  /* Glassmorphism Cards */
+  .glass-card {
+    @apply backdrop-blur-xl;
+    background: rgba(15, 15, 25, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  
+  .glass-card-hover {
+    @apply transition-all duration-300;
+  }
+  
+  .glass-card-hover:hover {
+    background: rgba(15, 15, 25, 0.8);
+    border-color: rgba(0, 229, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 229, 255, 0.1);
+  }
+  
+  /* Glow Effects */
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.3), 0 0 40px rgba(0, 229, 255, 0.1);
+  }
+  
+  .glow-cyan-sm {
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+  }
+  
+  .glow-cyan-text {
+    text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+  }
+  
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.3), 0 0 40px rgba(124, 58, 237, 0.1);
+  }
+  
+  /* Grid Background */
+  .grid-bg {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+  
+  /* Gradient Backgrounds */
+  .gradient-dark {
+    background: linear-gradient(180deg, #0a0a0f 0%, #0f0f19 50%, #0a0a0f 100%);
+  }
+  
+  /* Focus States */
+  .focus-glow {
+    @apply transition-all duration-200;
+  }
+  
+  .focus-glow:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.5);
+  }
+  
+  /* Scrollbar Styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 229, 255, 0.3);
+    border-radius: 3px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 229, 255, 0.5);
+  }
+  
+  /* Animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); }
+    50% { box-shadow: 0 0 40px rgba(0, 229, 255, 0.4); }
+  }
+  
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+  
+  /* Code Block Styling */
+  .code-block {
+    font-family: var(--font-jetbrains-mono);
+    background: rgba(10, 10, 15, 0.8);
+    border: 1px solid rgba(0, 229, 255, 0.1);
+  }
+  
+  /* Gradient Text */
+  .gradient-text {
+    background: linear-gradient(135deg, #00e5ff 0%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* Mermaid Diagram Container */
+.mermaid-container {
+  background: rgba(10, 10, 15, 0.5);
+  border-radius: var(--radius-lg);
+}
+
+/* Markdown Content Styling */
+.markdown-content {
+  font-family: var(--font-syne);
+  line-height: 1.7;
+}
+
+.markdown-content code {
+  font-family: var(--font-jetbrains-mono);
+  background: rgba(0, 229, 255, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.markdown-content pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.markdown-content pre {
+  background: rgba(10, 10, 15, 0.8);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+/* Input Styling */
+input::placeholder,
+textarea::placeholder {
+  color: rgba(148, 163, 184, 0.5);
+}
+
+/* Tab Styling */
+[data-state="active"] {
+  color: var(--cyan);
+}
