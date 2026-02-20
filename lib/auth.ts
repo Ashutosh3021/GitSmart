@@ -2,10 +2,10 @@
  * NextAuth configuration for GitHub OAuth
  */
 
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import GitHub from "next-auth/providers/github";
 
-const { handlers, signIn, signOut, auth } = NextAuth({
+export const authOptions: AuthOptions = {
   providers: [
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID!,
@@ -19,7 +19,6 @@ const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, account, profile }) {
-      // Persist the OAuth access_token to the token right after signin
       if (account) {
         token.accessToken = account.access_token;
         token.provider = account.provider;
@@ -32,10 +31,9 @@ const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      // Send properties to the client
-      session.accessToken = token.accessToken as string;
-      session.provider = token.provider as string;
-      session.githubProfile = token.githubProfile as Record<string, unknown>;
+      (session as any).accessToken = token.accessToken;
+      (session as any).provider = token.provider;
+      (session as any).githubProfile = token.githubProfile;
       
       return session;
     },
@@ -46,8 +44,8 @@ const { handlers, signIn, signOut, auth } = NextAuth({
   },
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
-});
+};
 
-export { handlers, signIn, signOut, auth };
+export default NextAuth(authOptions);

@@ -123,16 +123,48 @@ async function generateExplanation(
   provider: AIProvider,
   model?: string
 ): Promise<string> {
-  const prompt = buildContextPrompt(context);
+  try {
+    const prompt = buildContextPrompt(context);
 
-  const response = await llmService.generateCompletion(provider, prompt, {
-    model,
-    systemPrompt: SYSTEM_PROMPTS.explanation,
-    temperature: 0.7,
-    maxTokens: 2000,
-  });
+    const response = await llmService.generateCompletion(provider, prompt, {
+      model,
+      systemPrompt: SYSTEM_PROMPTS.explanation,
+      temperature: 0.7,
+      maxTokens: 2000,
+    });
 
-  return response.content;
+    return response.content;
+  } catch (error) {
+    console.error("Explanation generation failed:", error);
+    return getDefaultExplanation(context);
+  }
+}
+
+/**
+ * Get default explanation
+ */
+function getDefaultExplanation(context: RepoContext): string {
+  return `# ${context.metadata.name}
+
+${context.metadata.description || "A GitHub repository"}
+
+## Overview
+
+This is a ${context.metadata.language || "software"} project with ${context.metadata.stars} stars on GitHub.
+
+## Tech Stack
+
+${context.packageFile ? `Package Manager: ${context.packageFile.type}` : "Package manager: Unknown"}
+
+${context.languages ? `Languages: ${Object.entries(context.languages).slice(0, 3).map(([lang, bytes]) => lang).join(", ")}` : ""}
+
+## Getting Started
+
+Please refer to the README.md for setup instructions.
+
+## License
+
+${context.metadata.license || "No license specified"}`;
 }
 
 /**
@@ -150,13 +182,14 @@ async function generateScore(
   breakdown: ScoreBreakdown;
   details: Record<keyof ScoreBreakdown, string[]>;
 }> {
-  const prompt = buildContextPrompt(context);
+  try {
+    const prompt = buildContextPrompt(context);
 
-  const response = await llmService.generateCompletion(provider, prompt, {
-    model,
-    systemPrompt: SYSTEM_PROMPTS.scoring,
-    temperature: 0.3,
-    maxTokens: 1500,
+    const response = await llmService.generateCompletion(provider, prompt, {
+      model,
+      systemPrompt: SYSTEM_PROMPTS.scoring,
+      temperature: 0.3,
+      maxTokens: 1500,
   });
 
   try {
@@ -214,23 +247,50 @@ async function generateArchitectureDiagram(
   provider: AIProvider,
   model?: string
 ): Promise<string> {
-  const prompt = buildContextPrompt(context);
+  try {
+    const prompt = buildContextPrompt(context);
 
-  const response = await llmService.generateCompletion(provider, prompt, {
-    model,
-    systemPrompt: SYSTEM_PROMPTS.architecture,
-    temperature: 0.5,
-    maxTokens: 1500,
-  });
+    const response = await llmService.generateCompletion(provider, prompt, {
+      model,
+      systemPrompt: SYSTEM_PROMPTS.architecture,
+      temperature: 0.5,
+      maxTokens: 1500,
+    });
 
-  // Extract Mermaid code
-  const mermaidMatch = response.content.match(/```mermaid\n([\s\S]*?)```/);
-  if (mermaidMatch) {
-    return mermaidMatch[1].trim();
+    // Extract Mermaid code - try multiple patterns
+    let mermaidMatch = response.content.match(/```mermaid\n([\s\S]*?)```/);
+    if (mermaidMatch) {
+      return mermaidMatch[1].trim();
+    }
+    
+    // Try without language specifier
+    mermaidMatch = response.content.match(/```\n?([\s\S]*?)```/);
+    if (mermaidMatch && mermaidMatch[1].includes("flowchart")) {
+      return mermaidMatch[1].trim();
+    }
+
+    // Return raw content if no code block found
+    return response.content.trim();
+  } catch (error) {
+    console.error("Architecture diagram generation failed:", error);
+    return getDefaultArchitectureDiagram(context);
   }
+}
 
-  // Return raw content if no code block found
-  return response.content.trim();
+/**
+ * Get default architecture diagram
+ */
+function getDefaultArchitectureDiagram(context: RepoContext): string {
+  return `flowchart TB
+    subgraph Main["${context.metadata.name}"]
+        A[App Entry]
+        B[Core Logic]
+        C[Data Layer]
+    end
+    
+    style A fill:#00e5ff,stroke:#0a0a0f,color:#0a0a0f
+    style B fill:#7c3aed,stroke:#0a0a0f,color:#fff
+    style C fill:#22c55e,stroke:#0a0a0f,color:#0a0a0f`;
 }
 
 /**
@@ -244,23 +304,50 @@ async function generateWorkflowDiagram(
   provider: AIProvider,
   model?: string
 ): Promise<string> {
-  const prompt = buildContextPrompt(context);
+  try {
+    const prompt = buildContextPrompt(context);
 
-  const response = await llmService.generateCompletion(provider, prompt, {
-    model,
-    systemPrompt: SYSTEM_PROMPTS.workflow,
-    temperature: 0.5,
-    maxTokens: 1500,
-  });
+    const response = await llmService.generateCompletion(provider, prompt, {
+      model,
+      systemPrompt: SYSTEM_PROMPTS.workflow,
+      temperature: 0.5,
+      maxTokens: 1500,
+    });
 
-  // Extract Mermaid code
-  const mermaidMatch = response.content.match(/```mermaid\n([\s\S]*?)```/);
-  if (mermaidMatch) {
-    return mermaidMatch[1].trim();
+    // Extract Mermaid code - try multiple patterns
+    let mermaidMatch = response.content.match(/```mermaid\n([\s\S]*?)```/);
+    if (mermaidMatch) {
+      return mermaidMatch[1].trim();
+    }
+    
+    // Try without language specifier
+    mermaidMatch = response.content.match(/```\n?([\s\S]*?)```/);
+    if (mermaidMatch && mermaidMatch[1].includes("sequenceDiagram")) {
+      return mermaidMatch[1].trim();
+    }
+
+    // Return raw content if no code block found
+    return response.content.trim();
+  } catch (error) {
+    console.error("Workflow diagram generation failed:", error);
+    return getDefaultWorkflowDiagram(context);
   }
+}
 
-  // Return raw content if no code block found
-  return response.content.trim();
+/**
+ * Get default workflow diagram
+ */
+function getDefaultWorkflowDiagram(context: RepoContext): string {
+  return `sequenceDiagram
+    participant User
+    participant System as ${context.metadata.name}
+    participant GitHub as GitHub API
+    
+    User->>System: Request Analysis
+    System->>GitHub: Fetch Repository
+    GitHub-->>System: Return Data
+    System->>System: Process & Analyze
+    System-->>User: Return Results`;
 }
 
 /**
