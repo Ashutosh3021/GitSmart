@@ -1,11 +1,11 @@
 /**
  * API Route: POST /api/analyze
- * Main analysis endpoint - scrapes repo and runs AI analysis
+ * Main analysis endpoint - fetches repo data via GitHub API and runs AI analysis
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { scrapeRepository } from "@/services/github";
+import { parseRepoUrl, buildRepoContext } from "@/lib/github";
 import { analyzeRepository } from "@/services/analysis";
 import { cache } from "@/lib/redis";
 import type { AIProvider } from "@/lib/types";
@@ -36,10 +36,8 @@ export async function POST(request: NextRequest) {
     const { url, provider, model, forceRefresh } = parsed.data;
 
     // Parse owner and repo from URL
-    const urlPattern = /github\.com\/([^\/]+)\/([^\/]+)/;
-    const match = url.match(urlPattern);
-
-    if (!match) {
+    const parseResult = parseRepoUrl(url);
+    if (!parseResult) {
       return NextResponse.json(
         {
           success: false,
@@ -49,7 +47,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const [, owner, repo] = match;
+    const { owner, repo } = parseResult;
     const cacheKey = cache.generateRepoKey(owner, repo);
 
     // Check cache unless force refresh
@@ -68,9 +66,21 @@ export async function POST(request: NextRequest) {
     // Get GitHub access token from session (if available)
     const accessToken = request.headers.get("x-github-token") || undefined;
 
-    // Scrape repository
-    console.log(`🔍 Scraping ${owner}/${repo}...`);
-    const repoContext = await scrapeRepository(url, accessToken);
+    // Fetch repository data via GitHub API
+    console.log(`🔍 Fetching ${owner}/${repo} from GitHub API...`);
+    const repoResult = await buildRepoContext(url, accessToken, forceRefresh);
+
+    if (!repoResult.data) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: repoResult.error?.error || "Failed to fetch repository",
+        },
+        { status: 500 }
+      );
+    }
+
+    const repoContext = repoResult.data;
 
     // Run analysis
     console.log(`🧠 Analyzing with ${provider}...`);

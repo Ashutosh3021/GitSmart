@@ -172,7 +172,7 @@ ${context.metadata.license || "No license specified"}`;
  * @param context - Repository context
  * @param provider - AI provider
  * @param model - Model name
- */
+  */
 async function generateScore(
   context: RepoContext,
   provider: AIProvider,
@@ -190,9 +190,8 @@ async function generateScore(
       systemPrompt: SYSTEM_PROMPTS.scoring,
       temperature: 0.3,
       maxTokens: 1500,
-  });
+    });
 
-  try {
     // Extract JSON from response
     const jsonMatch = response.content.match(/\{[\s\S]*\}/);
     if (jsonMatch) {

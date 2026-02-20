@@ -342,7 +342,7 @@ function generateFooter(context: RepoContext): string {
 
 <div align="center">
 
-Made with ❤️ by the [${context.metadata.owner.login}](https://github.com/${context.metadata.owner.login}) team
+Made with ❤️ by the [${context.owner}](https://github.com/${context.owner}) team
 
 ⭐ Star this repo if you find it helpful!
 

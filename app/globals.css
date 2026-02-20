@@ -1,4 +1,4 @@
-/* Google Fonts - Must be first */
+/* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
 
 @import "tailwindcss";
@@ -56,6 +56,10 @@
 :root {
   /* RepoLens Design System - Dark Theme (Default) */
   --radius: 0.75rem;
+  
+  /* Fonts */
+  --font-syne: 'Syne', sans-serif;
+  --font-jetbrains-mono: 'JetBrains Mono', monospace;
   
   /* Core Colors */
   --background: #0a0a0f;

@@ -3,7 +3,7 @@
  * Handles pushing content to GitHub repositories via OAuth
  */
 
-import { parseRepoUrl, getAuthHeader } from "./github";
+import { parseRepoUrl, getAuthHeader } from "@/lib/github";
 
 const GITHUB_API_BASE = "https://api.github.com";
 
@@ -151,7 +151,11 @@ export async function pushReadme(
   url?: string;
   error?: string;
 }> {
-  const { owner, repo } = parseRepoUrl(url);
+  const parsed = parseRepoUrl(url);
+  if (!parsed) {
+    return { success: false, error: "Invalid GitHub URL" };
+  }
+  const { owner, repo } = parsed;
   const result = await pushToGitHub(
     owner,
     repo,

@@ -111,24 +111,41 @@ User: ${message}
 Assistant:`;
 
   // Call LLM
-  const llmResponse = await llmService.generateCompletion(provider, fullPrompt, {
-    model,
-    temperature: 0.7,
-    maxTokens: 2000,
-  });
+  try {
+    const llmResponse = await llmService.generateCompletion(provider, fullPrompt, {
+      model,
+      temperature: 0.7,
+      maxTokens: 2000,
+    });
 
-  // Save AI response
-  chatDb.saveMessage(repoId, "assistant", llmResponse.content, userId);
+    // Save AI response
+    chatDb.saveMessage(repoId, "assistant", llmResponse.content, userId);
 
-  console.log(`✅ Response received (${llmResponse.content.length} chars)`);
+    console.log(`✅ Response received (${llmResponse.content.length} chars)`);
 
-  // Return updated history
-  const updatedHistory = getChatHistory(repoId, 20);
+    // Return updated history
+    const updatedHistory = getChatHistory(repoId, 20);
 
-  return {
-    response: llmResponse.content,
-    messages: updatedHistory,
-  };
+    return {
+      response: llmResponse.content,
+      messages: updatedHistory,
+    };
+  } catch (error) {
+    // Save error message so user knows something went wrong
+    const errorMessage = error instanceof Error 
+      ? `I apologize, but I encountered an error: ${error.message}. Please try again.`
+      : "I apologize, but I encountered an unexpected error. Please try again.";
+    
+    chatDb.saveMessage(repoId, "assistant", errorMessage, userId);
+    
+    console.error("Chat error:", error);
+    
+    const updatedHistory = getChatHistory(repoId, 20);
+    return {
+      response: errorMessage,
+      messages: updatedHistory,
+    };
+  }
 }
 
 /**

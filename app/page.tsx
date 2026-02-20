@@ -122,16 +122,45 @@ export default function LandingPage() {
   const router = useRouter();
   const [repoUrl, setRepoUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState("");
 
   const handleAnalyze = async () => {
     if (!repoUrl.trim()) return;
 
+    let fullUrl = repoUrl.trim();
+    if (!fullUrl.startsWith("http")) {
+      fullUrl = `https://github.com/${fullUrl}`;
+    }
+
     setIsAnalyzing(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsAnalyzing(false);
+    setError("");
+
+    try {
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: fullUrl,
+          provider: "gemini",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        setError(result.error || "Failed to analyze repository");
+        setIsAnalyzing(false);
+        return;
+      }
+
+      sessionStorage.setItem("repoData", JSON.stringify(result.data));
       router.push("/dashboard");
-    }, 1500);
+    } catch (err) {
+      setError("Failed to analyze repository. Please try again.");
+      setIsAnalyzing(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -232,6 +261,9 @@ export default function LandingPage() {
             <p className="text-sm text-slate-500 mt-3">
               Try: facebook/react, vercel/next.js, or microsoft/vscode
             </p>
+            {error && (
+              <p className="text-sm text-red-400 mt-3">{error}</p>
+            )}
           </motion.div>
 
           {/* GitHub OAuth CTA */}
